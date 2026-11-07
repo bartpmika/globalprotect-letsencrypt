@@ -1,0 +1,11 @@
+# Secrets and local state: never commit
+data/
+bin/
+logs/
+# left over from the earlier shell version
+config.env
+acme/
+chain/
+.renew.lock
+__pycache__/
+.DS_Store
