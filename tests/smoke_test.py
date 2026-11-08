@@ -109,8 +109,9 @@ check(not g.schedule_installed(), "uninstall removes the schedule")
 # 6. Double-click launcher (Windows): runs Status and waits for a key
 if IS_WIN:
     p = subprocess.run(["cmd", "/c", "Check Status.bat"], cwd=WORK, input="\n", capture_output=True,
-                       text=True, errors="replace", timeout=300)
+                       text=True, encoding="utf-8", errors="replace", timeout=300)
     print(p.stdout + p.stderr)
     check("GlobalProtect certificate for " + DOMAIN in p.stdout, "Check Status.bat launches gpcert.py status")
+    check("\u2718" in p.stdout and "\u00e2\u0153" not in p.stdout, "Check Status.bat shows status symbols correctly (UTF-8)")
 
 print("\nAll checks passed.")

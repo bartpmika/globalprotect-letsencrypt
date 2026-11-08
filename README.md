@@ -1,5 +1,7 @@
 # Free public certificate and management for Palo Alto Networks GlobalProtect
 
+[![Windows](https://github.com/bartpmika/letsencrypt-duckdns-globalprotect/actions/workflows/windows.yml/badge.svg)](https://github.com/bartpmika/letsencrypt-duckdns-globalprotect/actions/workflows/windows.yml)
+
 A **free public certificate** for the GlobalProtect portal on your Palo Alto Networks firewall, plus **free certificate management**: it renews, installs, switches GlobalProtect to it, and commits, all automatically.
 
 - ✅ Publicly trusted: no certificate warnings on laptops and phones, and nothing to install on them
@@ -164,7 +166,7 @@ To change any setting, run Setup again. It remembers your answers, so press Ente
 - **Checks via operational commands only:** configuration is read with `show config running`, so the admin doesn't need the XML API *Configuration* permission. DDNS is found by scanning every interface, subinterface, AE, VLAN, loopback and tunnel for `ddns-config`. The interface IP comes from the DHCP client state or the static address.
 - **Schedule:** macOS launchd agent; Windows Task Scheduler (daily, at logon, and *run as soon as possible if missed*); Linux systemd user timer (`Persistent=true`) or cron. Renewal happens every `renew_days`. Deployment happens only when the firewall doesn't have the current certificate yet.
 - **Secrets:** `data/config.json` holds the DuckDNS token and the API key (or the password, if you chose to store it). It's readable only by your user and excluded from git, along with `data/`, `bin/` and `logs/`.
-- **Tested on:** macOS (Apple silicon, Python 3.9). Linux in Debian 12 (Python 3.8, ARM64), Debian 13 (Python 3.13, x86-64) and Ubuntu 24.04 (Python 3.12, ARM64), all with the cron schedule; the systemd timer hasn't been tested yet. **Windows hasn't been tested on a real machine yet.** Please [open an issue](../../issues) if something doesn't work.
+- **Tested on:** macOS (Apple silicon, Python 3.9), end to end against a real firewall. Linux in Debian 12 (Python 3.8, ARM64), Debian 13 (Python 3.13, x86-64) and Ubuntu 24.04 (Python 3.12, ARM64), with the cron schedule; the systemd timer hasn't been tested yet. Windows on every push via [GitHub Actions](../../actions/workflows/windows.yml): Windows x64 (Python 3.8 and 3.13) and Windows on ARM, covering the lego download, Task Scheduler, the launchers and the offline paths. The firewall and Let's Encrypt steps haven't been run on Windows yet. Please [open an issue](../../issues) if something doesn't work.
 - **Automatic GlobalProtect switch:** portals are matched by `portal-config/local-address/interface`, gateways by `local-address/interface`. A gateway with no interface binding is included if it shares an SSL/TLS profile with a matched portal. The new profile is created in `shared` with the old profile's `protocol-settings` copied over. If any step fails, the tool reverts its own candidate changes (`revert config partial admin`).
 - **Safety:** before installing, the tool runs `check pending-changes`, which covers every administrator's uncommitted changes, and it refuses to install a Let's Encrypt *staging* (test) certificate.
 

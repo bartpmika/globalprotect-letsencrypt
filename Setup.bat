@@ -1,6 +1,7 @@
 @echo off
 rem Windows: double-click to run. Keeps the window open to show the result.
 cd /d "%~dp0"
+chcp 65001 >nul
 where py >nul 2>nul
 if not errorlevel 1 (
   py -3 gpcert.py setup
