@@ -1,0 +1,25 @@
+name: Windows
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: windows-latest, python: "3.8" }    # oldest supported Python, x64
+          - { runner: windows-latest, python: "3.13" }   # current Python, x64
+          - { runner: windows-11-arm, python: "3.13" }   # Windows on ARM
+    runs-on: ${{ matrix.runner }}
+    name: ${{ matrix.runner }} / Python ${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Smoke test
+        run: python tests/smoke_test.py
