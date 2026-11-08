@@ -62,23 +62,19 @@ No other software or Python packages are needed.
 
 ### Step 1 — Download
 
-At the top of this page click the green **Code** button → **Download ZIP**, unzip it, and move the folder somewhere permanent.
+Click **Code → Download ZIP** at the top of this page and unzip it, or use git:
 
-**Or, with git:**
-
-macOS / Linux (Terminal):
+macOS / Linux:
 ```
 git clone https://github.com/bartpmika/letsencrypt-duckdns-globalprotect.git ~/letsencrypt-duckdns-globalprotect
 ```
 
-Windows (Command Prompt):
+Windows:
 ```
 git clone https://github.com/bartpmika/letsencrypt-duckdns-globalprotect.git "%USERPROFILE%\letsencrypt-duckdns-globalprotect"
 ```
 
-With git, macOS doesn't show the "can't verify" warning in Step 2, and `git pull` updates the tool later.
-
-> **macOS:** put it in your home folder (the one with your name), not in Desktop, Documents or Downloads. macOS blocks automatic renewals there. The git command above already does this.
+> **macOS:** keep the folder in your home folder, not in Desktop, Documents or Downloads.
 
 ### Step 2 — Run Setup
 
@@ -86,32 +82,7 @@ With git, macOS doesn't show the "can't verify" warning in Step 2, and `git pull
 |---|---|---|
 | Double-click **`Setup.command`** | Double-click **`Setup.bat`** | Run `./gpcert.py setup` |
 
-> **macOS:** if it says it can't verify the file, go to **System Settings → Privacy & Security** → **Open Anyway**. **Windows:** if SmartScreen appears, click **More info → Run anyway**.
-
-Setup asks a few questions and **tests each answer straight away**:
-
-| Question | What it checks |
-|---|---|
-| DuckDNS hostname and token | The name resolves and the token works |
-| Firewall IP and admin username | The firewall answers |
-| How to log in: **generate an API key from the password** (recommended), **use an existing API key** ([how to get one](https://docs.paloaltonetworks.com/ngfw/api/api-authentication-and-security/generate-api-key)), or **store the password** | The login works |
-| *(automatic)* | Scans **all** firewall interfaces for DuckDNS Dynamic DNS for your hostname, checks the interface IP matches DuckDNS, and reads the last DDNS update in the logs. If something is off it **warns you and waits** |
-
-> 🔑 An API key stops working when that admin's password changes. After a password change, just run Setup again.
-
-Setup then:
-
-1. Gets the certificate and installs it on the firewall as **`gp-letsencrypt`**, then commits.
-2. **Switches GlobalProtect to it.** It finds every GlobalProtect portal and gateway on the DuckDNS interface, shows them, and lets you choose:
-   1. **Automatically** (default): creates an SSL/TLS Service Profile `gp-letsencrypt` with the same TLS settings as the current one, points those portals and gateways at it, and commits. Your existing profiles aren't changed, so anything else sharing them (such as the web UI) is unaffected.
-   2. **I'll change it myself**: shows exactly which SSL/TLS profile to change and waits while you do it in the web UI.
-   3. **Skip for now**: GlobalProtect keeps its current certificate until you switch it.
-3. Turns on automatic renewal and shows the final status.
-
-`gp-letsencrypt` already includes the full certificate chain (the Let's Encrypt intermediates), so you don't need to import any CA certificates. Use `yourname.duckdns.org` as the portal address in GlobalProtect.
-
-Changing it by hand (choice 2, or automatically if the admin lacks the Configuration permission) means:
-**Device → Certificate Management → SSL/TLS Service Profile** → your GlobalProtect profile → **Certificate:** `gp-letsencrypt` → **OK** → **Commit**
+Answer the questions. When Setup finishes, GlobalProtect uses the new certificate and renewals are automatic. Use `yourname.duckdns.org` as the portal address in GlobalProtect.
 
 ---
 
