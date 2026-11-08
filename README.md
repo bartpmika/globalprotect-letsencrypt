@@ -100,18 +100,16 @@ Setup asks a few questions and **tests each answer straight away**:
 Setup then:
 
 1. Gets the certificate and installs it on the firewall as **`gp-letsencrypt`**, then commits.
-2. **Switches GlobalProtect to it.** It finds every GlobalProtect portal and gateway on the DuckDNS interface, shows them, and asks *"Switch them automatically?"* On **y**, it creates an SSL/TLS Service Profile `gp-letsencrypt` with the same TLS settings as the current one, points those portals and gateways at it, and commits. Your existing profiles aren't changed, so anything else sharing them (such as the web UI) is unaffected.
+2. **Switches GlobalProtect to it.** It finds every GlobalProtect portal and gateway on the DuckDNS interface, shows them, and lets you choose:
+   1. **Automatically** (default): creates an SSL/TLS Service Profile `gp-letsencrypt` with the same TLS settings as the current one, points those portals and gateways at it, and commits. Your existing profiles aren't changed, so anything else sharing them (such as the web UI) is unaffected.
+   2. **I'll change it myself**: shows exactly which SSL/TLS profile to change and waits while you do it in the web UI.
+   3. **Skip for now**: GlobalProtect keeps its current certificate until you switch it.
 3. Turns on automatic renewal and shows the final status.
 
 `gp-letsencrypt` already includes the full certificate chain (the Let's Encrypt intermediates), so you don't need to import any CA certificates. Use `yourname.duckdns.org` as the portal address in GlobalProtect.
 
-<details>
-<summary>Prefer to switch by hand, or the admin lacks the Configuration permission?</summary>
-
-Answer **n**, and Setup shows exactly which profile to change and waits while you do it:
+Changing it by hand (choice 2, or automatically if the admin lacks the Configuration permission) means:
 **Device → Certificate Management → SSL/TLS Service Profile** → your GlobalProtect profile → **Certificate:** `gp-letsencrypt` → **OK** → **Commit**
-
-</details>
 
 ---
 
@@ -151,7 +149,7 @@ Nothing to do. On macOS and Linux a notification pops up if a renewal fails. On 
 | *firewall said: Invalid Credential* | The password changed (so the API key no longer works). Run Setup again. |
 | *No interface on the firewall updates …* | Set up Dynamic DNS for DuckDNS on your WAN interface ([docs](https://docs.paloaltonetworks.com/ngfw/networking/ddns/configure-dynamic-dns-for-firewall-interfaces)). |
 | *… DuckDNS points to …, so the firewall's updates aren't working* | Check **Monitor → Logs → System** with `( subtype eq ddns )`. |
-| *uses certificate '…', not 'gp-letsencrypt'* | Run Setup again and answer **y** to *Switch them automatically?* |
+| *uses certificate '…', not 'gp-letsencrypt'* | Run Setup again and choose **Automatically** (or **I'll change it myself**) at the GlobalProtect step. |
 
 To change any setting, run Setup again. It remembers your answers, so press Enter to keep each one.
 

@@ -967,19 +967,22 @@ def setup():
         for o in todo:
             print("    - %s '%s' (vsys %s, SSL/TLS profile '%s', certificate '%s')"
                   % (o["kind"], o["name"], o["vsys"], o["profile"], o["certificate"]))
-        print("  Switching creates an SSL/TLS profile '%s' with the same TLS settings, points these at it, "
-              "and commits. Your existing profiles stay unchanged." % cfg["cert_name"])
-        answer = ask("Switch them automatically? (y/n)", "y",
-                     validate=lambda v: None if v.lower() in ("y", "yes", "n", "no") else "Type y or n")
-        if answer.lower().startswith("y"):
+        how = choose("How do you want to switch them?", [
+            "Automatically: create SSL/TLS profile '%s' with the same TLS settings, point these at it, "
+            "and commit (your existing profiles stay unchanged)" % cfg["cert_name"],
+            "I'll change it myself in the firewall web UI (show me what to change)",
+            "Skip for now (run Setup again later, or change it by hand)"], "1")
+        if how == 1:
             try:
                 ok("Switched and committed (%s)" % fw.use_certificate(todo, cfg["cert_name"]))
             except Fail as e:
                 bad("Couldn't switch automatically: %s" % e)
                 print("    (Automatic switching needs the XML API 'Configuration' permission.)")
                 manual_switch(cfg, todo)
-        else:
+        elif how == 2:
             manual_switch(cfg, todo)
+        else:
+            warn("Skipped. GlobalProtect keeps its current certificate until you switch it.")
 
     step("7/7  Turning on automatic renewal")
     ok("Schedule: " + install_schedule())
